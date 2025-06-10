@@ -3,74 +3,92 @@ from tkinter import font
 import random
 
 root = tk.Tk()
-root.title("Chance2.py: Number Window")
-root.geometry("800x600")
-big_font = font.Font(family="Helvetica", size=32)
+root.title('Chance simulator')
+root.geometry("800x800")
+Font = font.Font(family="Arial", size=32)
+smolFont = font.Font(family="Arial", size=16)
+storedNumber = 0
 
+# funktions
 def on_change(*args):
     value = var.get()
     try:
-        float_val = float(value)
-        if not (0 <= float_val <= 100):
-            raise ValueError
+        value = float(value)
+        if value > 100:
+            var.set('100')
+        elif value < 0:
+            var.set('0')
+        if not (0 <= value <= 100):
+            var.set(''.join(c for i, c in enumerate(value) if c.isdigit() or (c == '.' and '.' not in value[:i])))
     except ValueError:
-        cleaned = ''.join(c for i, c in enumerate(value) if c.isdigit() or (c == '.' and '.' not in value[:i]))
-        var.set(cleaned)
-        print(f"Deleted character {value}")
-
-Frame2 = tk.Frame(root)
-green_score = tk.Label(Frame2, text="0", font=big_font, fg="green")
-dash_score = tk.Label(Frame2, text="-", font=big_font)
-red_score = tk.Label(Frame2, text="0", font=big_font, fg="red")
-
+        pass
 def on_submit():
-    value = var.get()
-    if not (0 <= float(value) <= 100):
-        var.set('')
-        return
-    if float(value) > 100:
-        var.set("")
-        return
-    elif float(value) < 0:
-        var.set("")
-        return
-    button.pack()
-    click.pack(pady=20)
-
-frameFirst = tk.Frame(root)
-frameFirst.pack(pady=20)
-frame = tk.Frame(root)
-frame.pack(pady=20)
+    global RealstoredNumber
+    RealstoredNumber = var.get()
+    if var.get() == '':
+        stored_number.config(text=f"Stored chance: NaN%")
+    else:
+        stored_number.config(text=f"Stored chance: {RealstoredNumber}%")
+    greenScore.config(text="0")
+    redScore.config(text="0")
+    try_button.pack()
+    state_label.pack()
+    Frame2.pack(pady=Padding)
+    resetButton.pack()
+def calculate():
+    value = float(RealstoredNumber)
+    random_float = round(random.uniform(0, 100), 1)
+    if random_float <= value:
+        greenScore.config(text=str(int(greenScore.cget("text")) + 1))
+        state_label.config(text="Event success!", fg="green")
+    else:
+        redScore.config(text=str(int(redScore.cget("text")) + 1))
+        state_label.config(text="Event fail!", fg="red")
+def reset():
+    var.set('')
+    Frame2.pack_forget()
+    resetButton.pack_forget()
+    try_button.pack_forget()
+    state_label.pack_forget()
+    storedNumber = "NaN"
+    RealstoredNumber = 0
+    stored_number.config(text=f"Stored chance: NaN%")
 var = tk.StringVar()
 var.trace_add("write", on_change)
-label = tk.Label(frameFirst, text="Chance of an event happening", font=big_font)
-label.grid(row=0, column=0)
-entry = tk.Entry(frame, width=10, textvariable=var, font=big_font)
-entry.grid(row=1, column=0)
-percent_label = tk.Label(frame, text="%", font=big_font)
-percent_label.grid(row=1, column=1)
-button_submit = tk.Button(root, text="Submit number", font=big_font, command=on_submit)
-button_submit.pack()
+Padding = 10
+# Screen
+Instruction = tk.Label(root, text="Chance of event occurring:", font=Font)
+state_label = tk.Label(root, text="Click 'Run'", font=Font, pady=Padding)
+try_button = tk.Button(root, text="Run", font=Font, command=calculate, pady=Padding, bd=8, relief="raised")
+submit_button = tk.Button(root, text="Enter", font=Font, command=on_submit, bd=8, relief="raised")
+stored_number = tk.Label(root, text="Stored chance: NaN%", font=smolFont)
+resetButton = tk.Button(root, text="Reset", font=Font, pady=Padding, command=reset, bd=8, relief="raised")
+# FRAME 1
+Frame1 = tk.Frame(root)
 
-def calculate():
-    green_score.grid(row=6, column=0)
-    dash_score.grid(row=6, column=1)
-    red_score.grid(row=6, column=2)
-    Frame2.pack(pady=20)
-    value = var.get()
-    RandNumb = round(random.uniform(0, 100), 1)
-    chance = float(value)
-    if RandNumb <= chance:
-        click.config(text="Event success!", fg="green")
-        scoreG = green_score.cget("text")
-        green_score.config(text=str(int(scoreG)+1))
-        print("Event success")
-    else:
-        scoreR = red_score.cget("text")
-        red_score.config(text=str(int(scoreR)+1))
-        click.config(text="Event fail!", fg="red")
-        print("Event fail")
-        
-click = tk.Label(root, text="Click the button.", font=big_font)
-button = tk.Button(root, text="Click Me", font=big_font, command=calculate)
+Entry = tk.Entry(Frame1, width=5, textvariable=var, font=Font)
+percent_label = tk.Label(Frame1, text="%", font=Font)
+
+
+# FRAME 2
+Frame2 = tk.Frame(root)
+
+greenScore = tk.Label(Frame2, text="0", font=Font, pady=Padding, fg="green")
+redScore = tk.Label(Frame2, text="0", font=Font, pady=Padding, fg="red")
+dashScore = tk.Label(Frame2, text="-", font=Font, pady=Padding)
+
+
+# Rendering
+# Rendering -> Frame1
+Entry.grid(row=1, column=0, pady=Padding)
+percent_label.grid(row=1, column=1, pady=Padding)
+# Rendering -> Frame 2
+greenScore.grid(row=2, column=0)
+dashScore.grid(row=2, column=1)
+redScore.grid(row=2, column=2)
+# Rendering Frames and Screen
+Instruction.pack(pady=Padding)
+Frame1.pack(pady=Padding)
+submit_button.pack()
+stored_number.place(x=50, y=200)
 root.mainloop()
