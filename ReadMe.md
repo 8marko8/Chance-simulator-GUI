@@ -1,10 +1,8 @@
 # Changelog
-### **v0.1.0** 
+### **v0.2.0** 
 
-- Added Readme.md (you're reading it right now)
-- Added reset button
-- Now displays the last stored chance used for calculation
-- You now need to click the "Enter" button to update the chance that gets used
-- Clicking "Enter" also resets the success and fail scores
+- Changed the look of the buttons, made it smaller.
+- added a total amount of operations between the 2 scores
+- you can now plot the success/failure graph over the amount of operations
 
-2025/06/10 07:08 UTC
+2025/06/13 06:56 UTC
